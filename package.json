@@ -1,0 +1,22 @@
+{
+  "name": "catch22",
+  "version": "1.0.0",
+  "description": "nginx-ingress-default-backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheMasterR/catch22.git"
+  },
+  "keywords": [
+    "nginx-ingress-default-backend"
+  ],
+  "author": "Lucian Pantea",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheMasterR/catch22/issues"
+  },
+  "homepage": "https://github.com/TheMasterR/catch22#readme"
+}
