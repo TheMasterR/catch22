@@ -2,7 +2,7 @@ FROM node:13-alpine
 
 WORKDIR /app
 
-ADD package*.json .
+ADD package*.json ./
 ADD app ./
 
 RUN npm install
