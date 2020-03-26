@@ -1,6 +1,6 @@
 FROM node:13-alpine
 
-WORKDIR /app
+WORKDIR /code
 
 ADD package*.json ./
 ADD app ./
