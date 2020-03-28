@@ -305,7 +305,7 @@ pre {
     left: 0;
     bottom: 0;
     background-size: cover;
-    background: url("http://localhost:8080/random") 0 0 no-repeat;
+    background: url("/random") 0 0 no-repeat;
     -webkit-animation: pic-animation1 15s infinite reverse linear;
     /* Safari 4+ */
     -moz-animation: pic-animation1 15s infinite reverse linear;
