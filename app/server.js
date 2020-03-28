@@ -19,7 +19,8 @@ const config = {
 // data struct
 const data = {
   status: null,
-  started_at: null
+  started_at: null,
+  branch: null
 };
 
 // helper functions
@@ -79,7 +80,9 @@ const extractBranchFromHost = async host => {
   const test = '-app.bannersnack.dev';
 
   if (host.indexOf(test) !== -1){
-    return host.replace(test,'');
+    const branch = host.replace(test,'');
+    data.branch = branch
+    return branch;
   }
 
   return null;
@@ -127,9 +130,9 @@ const searchAndStartBranch = async host => {
         }
     } else {
       // create a pipeline
-      const newPipeline = await startPipeline(branches[0].name);
-      data.started_at = newPipeline.created_at;
-      data.status = newPipeline.status;
+      // const newPipeline = await startPipeline(branches[0].name);
+      // data.started_at = newPipeline.created_at;
+      data.status = 'start';
       return data;
     }
   }
@@ -143,14 +146,25 @@ app.set("x-powered-by", false);
 app.set("view engine", "ejs");
 app.set("views", "app/views");
 app.get("/", async (req, res) => {
+  const confirmed = req.query.confirm || false;
   const data = await searchAndStartBranch(req.hostname);
   console.log(data);
   switch (data.status) {
+    case 'start':
+      if (confirmed) startPipeline(data.branch);
+      res.render("index", {
+        data: {
+          branch: data.branch,
+          showAlert: !confirmed,
+          date: new Date(data.started_at).setMinutes(new Date(data.started_at).getMinutes() + 7)
+        }
+      });
+      break;
     case 'pending':
     case 'running':
       res.render("index", {
         data: {
-          name: "tst",
+          branch: data.branch,
           date: new Date(data.started_at).setMinutes(new Date(data.started_at).getMinutes() + 7)
         }
       });

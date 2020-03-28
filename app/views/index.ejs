@@ -13,6 +13,17 @@
 </head>
 
 <body>
+    <% if (data.showAlert) { %>
+    <script>
+        var r = confirm("Are you sure you want to start the branch?");
+        if (r == true) {
+            window.location.href = `http://${window.location.hostname}:8080/?confirm=true`;
+        } else {
+            window.location.href = "https://www.bannersnack.com";
+        }
+    </script>
+    <% } %>
+
     <div id="preloader">
         <div class="outer">
             <div class="infinityChrome">
@@ -51,22 +62,22 @@
         // var countDownDate = new Date("Apr 1, 2020 15:37:25").getTime();
         var countDownDate = <%= data.date %>
 
-        var x = setInterval(function () {
-            var now = new Date().getTime();
-            var distance = countDownDate - now;
-            // var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            // var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            var x = setInterval(function () {
+                var now = new Date().getTime();
+                var distance = countDownDate - now;
+                // var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                // var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            document.getElementById("timer").innerHTML = "~" + minutes + "m " + seconds + "s remaining";
+                document.getElementById("timer").innerHTML = "~" + minutes + "m " + seconds + "s remaining";
 
-            if (distance < 0) {
-                clearInterval(x);
-                document.getElementById("timer").innerHTML = "attepting to load app in 5 seconds...";
-                setTimeout(() => location.reload(), 5000);
-            }
-        }, 100);
+                if (distance < 0) {
+                    clearInterval(x);
+                    document.getElementById("timer").innerHTML = "attepting to load app in 5 seconds...";
+                    setTimeout(() => location.reload(), 5000);
+                }
+            }, 100);
     </script>
     <script src="/public/js/main.js"></script>
 </body>
