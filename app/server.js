@@ -20,7 +20,7 @@ app.set("x-powered-by", false);
 app.set("view engine", "ejs");
 app.set("views", "app/views");
 app.get("/random", async (req, res) => {
-  res.redirect(`https://${req.hostname}/public/images/${photoColection[Math.floor(Math.random() * photoColection.length)]}`);
+  res.redirect(`/public/images/${photoColection[Math.floor(Math.random() * photoColection.length)]}`);
 });
 app.get("/", async (req, res) => {
   const confirmed = req.query.confirm || false;
