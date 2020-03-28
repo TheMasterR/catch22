@@ -2,9 +2,10 @@
   "name": "catch22",
   "version": "1.0.0",
   "description": "nginx-ingress-default-backend",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app/server.js",
+    "mon": "nodemon app/server.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,13 @@
   },
   "homepage": "https://github.com/TheMasterR/catch22#readme",
   "dependencies": {
-    "dotenv": "^8.2.0",
-    "node-fetch": "^2.6.0"
+    "dotenv": "8.2.0",
+    "ejs": "3.0.1",
+    "express": "4.17.1",
+    "moment": "^2.24.0",
+    "node-fetch": "2.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "2.0.2"
   }
 }

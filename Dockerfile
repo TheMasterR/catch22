@@ -7,4 +7,4 @@ ADD ./app ./app
 
 RUN npm install
 
-ENTRYPOINT ["node", "app/index.js"]
+ENTRYPOINT ["node", "app/server.js"]
