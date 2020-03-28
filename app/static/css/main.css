@@ -358,7 +358,7 @@ pre {
 
 @-webkit-keyframes pic-animation1 {
     0% {
-        background-position: 0 100%;
+        background-position: -400px 100%;
     }
 
     100% {
@@ -368,7 +368,7 @@ pre {
 
 @-moz-keyframes pic-animation1 {
     0% {
-        background-position: 0 100%;
+        background-position: -400px 100%;
     }
 
     100% {
@@ -378,7 +378,7 @@ pre {
 
 @-o-keyframes pic-animation1 {
     0% {
-        background-position: 0 100%;
+        background-position: -400px 100%;
     }
 
     100% {
@@ -388,7 +388,7 @@ pre {
 
 @keyframes pic-animation1 {
     0% {
-        background-position: 0 100%;
+        background-position: -400px 100%;
     }
 
     100% {

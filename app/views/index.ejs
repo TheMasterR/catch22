@@ -17,7 +17,10 @@
     <script>
         var r = confirm("Are you sure you want to start the branch?");
         if (r == true) {
-            window.location.href = `https://${window.location.hostname}/?confirm=true`;
+            var url = new URL(window.location.href);
+            url.searchParams.append('confirm', 'true');
+            
+            window.location.href = url;
         } else {
             window.location.href = "https://www.bannersnack.com";
         }

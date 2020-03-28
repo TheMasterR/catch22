@@ -1,153 +1,18 @@
 const express = require("express");
-const fetch = require("node-fetch");
 const path = require("path");
-const fs = require("fs");
+const { get, post, del} = require("./conn");
+const { getPhotos } = require("./getPhotos");
+const config = require("./config");
 const app = express();
 const moment = require("moment");
 const sleep = async ms => new Promise(resolve => setTimeout(resolve, ms));
-const photosPath = path.join(__dirname, 'static/images');
+const { job } = require("./gitlab");
 
-const photoColection = [];
+let photoColection;
+(async()=>{
+  photoColection = await getPhotos();
+})()
 
-// get photos
-fs.readdir(photosPath, function (err, files) {
-  files.forEach((file) => photoColection.push(file));
-});
-
-// load env
-require("dotenv").config();
-
-// populate config
-const config = {
-  PRIVATE_TOKEN: process.env.PRIVATE_TOKEN,
-  GITLAB_HOST: process.env.GITLAB_HOST,
-  GITLAB_API_VERSION: 4,
-  PROJECT_ID: 259
-};
-
-// data struct
-const data = {
-  status: null,
-  started_at: null,
-  branch: null
-};
-
-// helper functions
-const get = async url => {
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "PRIVATE-TOKEN": config.PRIVATE_TOKEN
-      }
-    });
-    const json = await response.json();
-    return json;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const post = async (url, body) => {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "PRIVATE-TOKEN": config.PRIVATE_TOKEN
-      },
-      body: body
-    });
-    const json = await response.json();
-    return json;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const del = async url => {
-  try {
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "PRIVATE-TOKEN": config.PRIVATE_TOKEN
-      }
-    });
-    const res = await response.text();
-    return res;
-  } catch (error) {
-    console.log(error);
-    return {};
-  }
-};
-
-const extractBranchFromHost = async host => {
-  //TODO: extract the branchName
-  console.log('searching for hostname: ', host);
-  const test = '-app.bannersnack.dev';
-
-  if (host.indexOf(test) !== -1){
-    const branch = host.replace(test,'');
-    data.branch = branch
-    return branch;
-  }
-
-  return null;
-};
-
-const startPipeline = async branch => {
-  const response = await post(
-    `${config.GITLAB_HOST}/api/v4/projects/${config.PROJECT_ID}/pipeline/`,
-    `{ "ref": "${branch}", "variables": [{"key": "AUTO", "value": "true"}] }`
-  );
-
-  return response;
-};
-
-const searchAndStartBranch = async host => {
-  const branch = await extractBranchFromHost(host);
-  if (branch == null) {
-    data.status = null;
-    return data;
-  }
-
-  // search for a matching branch
-  const branches = await get(
-    `${config.GITLAB_HOST}/api/v4/projects/${config.PROJECT_ID}/repository/branches/?per_page=1&page=1&search=${branch}`
-  );
-  if (branches && branches.length > 0) {
-    // if found a branch, check for a pipeline that's allready running
-    const pipelines = await get(
-      `${config.GITLAB_HOST}/api/v4/projects/${config.PROJECT_ID}/pipelines/?per_page=1&ref=${branches[0].name}`
-    );
-    if (pipelines && pipelines.length > 0 && pipelines[0].status == "failed") {
-      // pipeline is failed
-      console.log("pipeline is failed, abort");
-      data.status = 'failed'
-      return data;
-    } else if (pipelines && pipelines.length > 0 && pipelines[0].status !== 'success') {
-      // get more info about the pipeline
-      const pipeline = await get(
-        `${config.GITLAB_HOST}/api/v4/projects/${config.PROJECT_ID}/pipelines/${pipelines[0].id}`
-      );
-      if (pipeline) {
-          data.started_at = pipeline.started_at;
-          data.status = pipeline.status;
-          return data;
-        }
-    } else {
-      // create a pipeline
-      // const newPipeline = await startPipeline(branches[0].name);
-      // data.started_at = newPipeline.created_at;
-      data.status = 'start';
-      return data;
-    }
-  }
-
-  return data;
-};
 
 // express
 app.use("/public", express.static(path.join(__dirname, "static")));
@@ -159,26 +24,23 @@ app.get("/random", async (req, res) => {
 });
 app.get("/", async (req, res) => {
   const confirmed = req.query.confirm || false;
-  const data = await searchAndStartBranch(req.hostname);
-  console.log(data);
-  switch (data.status) {
+  const response = await job(req.hostname, confirmed);
+  console.log(response);
+
+  switch (response.status) {
     case 'start':
-      if (confirmed) startPipeline(data.branch);
-      res.render("index", {
-        data: {
-          branch: data.branch,
-          showAlert: !confirmed,
-          date: new Date(data.started_at).setMinutes(new Date(data.started_at).getMinutes() + 7)
-        }
-      });
-      break;
     case 'pending':
     case 'running':
       res.render("index", {
         data: {
-          branch: data.branch,
-          date: new Date(data.started_at).setMinutes(new Date(data.started_at).getMinutes() + 7)
+          branch: response.branch,
+          date: new Date(response.created_at).setMinutes(new Date(response.created_at).getMinutes() + 8)
         }
+      });
+      break;
+    case 'confirm':
+      res.render("index", {
+        data: { showAlert: true },
       });
       break;
     default:
@@ -193,18 +55,3 @@ app.get("/", async (req, res) => {
 
 // start server
 app.listen(8080);
-
-// pipeline logic
-
-// get all branches
-// 	- check if branch exists
-
-// if status = success, check finished_at > 10 mintues, then create new pipeline
-// if status = running or pending, check duration and report to user
-// if status = failed or canceled, report to user that we can't do nothing about it
-
-// default: create pipeline
-
-// race problems will occur!
-// refs are case sensitive
-// slugs != refs always
