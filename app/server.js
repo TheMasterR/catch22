@@ -143,8 +143,7 @@ app.set("x-powered-by", false);
 app.set("view engine", "ejs");
 app.set("views", "app/views");
 app.get("/", async (req, res) => {
-  // const data = await searchAndStartBranch(req.hostname);
-  const data = await searchAndStartBranch('tst-app.bannersnack.dev');
+  const data = await searchAndStartBranch(req.hostname);
   console.log(data);
   switch (data.status) {
     case 'pending':
