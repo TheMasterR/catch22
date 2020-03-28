@@ -10,7 +10,7 @@ body {
 }
 
 .message {
-    padding-top: 100px;
+    padding-top: 35px;
     color: #f19e04;
     font-family: Lato;
     font-size: large;
@@ -298,6 +298,23 @@ pre {
     /* IE 10+ */
 }
 
+.pic1 {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    background-size: cover;
+    background: url("http://localhost:8080/random") 0 0 no-repeat;
+    -webkit-animation: pic-animation1 15s infinite reverse linear;
+    /* Safari 4+ */
+    -moz-animation: pic-animation1 15s infinite reverse linear;
+    /* Fx 5+ */
+    -o-animation: pic-animation1 15s infinite reverse linear;
+    /* Opera 12+ */
+    animation: pic-animation1 15s infinite reverse linear;
+    /* IE 10+ */
+}
 
 @-webkit-keyframes wave-animation1 {
     0% {
@@ -336,5 +353,45 @@ pre {
 
     100% {
         background-position: 1601px 0;
+    }
+}
+
+@-webkit-keyframes pic-animation1 {
+    0% {
+        background-position: 0 100%;
+    }
+
+    100% {
+        background-position: 1601px 100%;
+    }
+}
+
+@-moz-keyframes pic-animation1 {
+    0% {
+        background-position: 0 100%;
+    }
+
+    100% {
+        background-position: 1601px 100%;
+    }
+}
+
+@-o-keyframes pic-animation1 {
+    0% {
+        background-position: 0 100%;
+    }
+
+    100% {
+        background-position: 1601px 100%;
+    }
+}
+
+@keyframes pic-animation1 {
+    0% {
+        background-position: 0 100%;
+    }
+
+    100% {
+        background-position: 1601px 100%;
     }
 }

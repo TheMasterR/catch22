@@ -1,9 +1,18 @@
 const express = require("express");
 const fetch = require("node-fetch");
 const path = require("path");
+const fs = require("fs");
 const app = express();
 const moment = require("moment");
 const sleep = async ms => new Promise(resolve => setTimeout(resolve, ms));
+const photosPath = path.join(__dirname, 'static/images');
+
+const photoColection = [];
+
+// get photos
+fs.readdir(photosPath, function (err, files) {
+  files.forEach((file) => photoColection.push(file));
+});
 
 // load env
 require("dotenv").config();
@@ -145,6 +154,9 @@ app.use("/public", express.static(path.join(__dirname, "static")));
 app.set("x-powered-by", false);
 app.set("view engine", "ejs");
 app.set("views", "app/views");
+app.get("/random", async (req, res) => {
+  res.redirect(`https://${req.hostname}/public/images/${photoColection[Math.floor(Math.random() * photoColection.length)]}`);
+});
 app.get("/", async (req, res) => {
   const confirmed = req.query.confirm || false;
   const data = await searchAndStartBranch(req.hostname);
